@@ -1,5 +1,8 @@
+require_relative 'printer'
+
 module Mastermind
   class Board
+    include Printer
     attr_reader :num_columns, :num_rows, :rows
 
     def initialize(num_columns, num_rows)
