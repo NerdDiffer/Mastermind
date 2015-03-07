@@ -21,8 +21,8 @@ module Mastermind
   end
 
   class CodePeg < Peg
-    @keypeg_colors = [:black, :white, :brown, :red, 
-                      :orange, :yellow, :green, :blue]
+    @keypeg_colors = [:black, :red, :green, :yellow,
+                      :blue, :magenta, :cyan, :white]
   end
 
   class KeyPeg < Peg
