@@ -17,33 +17,17 @@ require 'spec_helper'
       end
 
       describe '.print_top_bottom_border' do
-        it 'the size of output depends on contents of row' do
-          answer = '--------|-------|------|-----'
-          expect(Printer.print_horizontal_border(last_row1, :minor)).to eq answer
+        it 'the size of each cell can be specified' do
+          answer = '-----|-----|-----|-----'
+          expect(Printer.print_horizontal_border(last_row1, 5, :minor)).to eq answer
         end
         it 'prints ROW_HORIZONTAL_MINOR_BORDER by default' do
-          answer = '--------|-------|------|-----'
-          expect(Printer.print_horizontal_border(last_row1)).to eq answer
+          answer = '-----|-----|-----|-----'
+          expect(Printer.print_horizontal_border(last_row1, 5)).to eq answer
         end
         it 'can print ROW_HORIZONTAL_MAJOR_BORDER on demand' do
-          answer = '=====|======|=======|========'
-          expect(Printer.print_horizontal_border(last_row2, :major)).to eq answer
-        end
-      end
-
-      describe '.print_row_contents' do
-        it 'the size of output depends on contents of row' do
-          answer = ' yellow | green | blue | red '
-          expect(Printer.print_row_contents(last_row1)).to eq answer
-        end
-      end
-
-      describe '.print_whole_row' do
-        it 'wraps up 2 other functions to return border & contents as array' do
-          top = '--------|-------|------|-----'
-          middle = ' yellow | green | blue | red ' 
-          answer = [top, middle]
-          expect(Printer.print_whole_row(last_row1)).to eq answer
+          answer = '=====|=====|=====|====='
+          expect(Printer.print_horizontal_border(last_row2, 5, :major)).to eq answer
         end
       end
 
