@@ -16,30 +16,35 @@ require 'spec_helper'
         end
       end
 
-      describe '.print_top_bottom_border' do
+      describe '.set_horizontal_border' do
         it 'the size of each cell can be specified' do
           answer = '-----|-----|-----|-----'
-          expect(Printer.print_horizontal_border(last_row1, 5, :minor)).to eq answer
+          expect(Printer.set_horizontal_border(last_row1, 5, :minor)).to eq answer
         end
         it 'prints ROW_HORIZONTAL_MINOR_BORDER by default' do
           answer = '-----|-----|-----|-----'
-          expect(Printer.print_horizontal_border(last_row1, 5)).to eq answer
+          expect(Printer.set_horizontal_border(last_row1, 5)).to eq answer
         end
         it 'can print ROW_HORIZONTAL_MAJOR_BORDER on demand' do
           answer = '=====|=====|=====|====='
-          expect(Printer.print_horizontal_border(last_row2, 5, :major)).to eq answer
+          expect(Printer.set_horizontal_border(last_row2, 5, :major)).to eq answer
         end
       end
 
-      describe '.set_horizontal_border' do
+      describe '.border_major_or_minor' do
         it 'returns ROW_HORIZONTAL_MINOR_BORDER by default' do
-          expect(Printer.set_horizontal_border).to eq Printer::ROW_HORIZONTAL_MINOR_BORDER
+          expect(Printer.border_major_or_minor).to eq Printer::ROW_HORIZONTAL_MINOR_BORDER
         end
         it 'returns ROW_HORIZONTAL_MAJOR_BORDER when passed `:major`' do
-          expect(Printer.set_horizontal_border(:major)).to eq Printer::ROW_HORIZONTAL_MAJOR_BORDER
+          expect(Printer.border_major_or_minor(:major)).to eq Printer::ROW_HORIZONTAL_MAJOR_BORDER
         end
       end
 
+      describe '.set_default_cell_size' do
+        it 'returns a number based on the class of the passed-in board' do
+          expect(Printer.set_default_cell_size(hint_board)).to eq 1
+        end
+      end
     end
   #end
 #end
