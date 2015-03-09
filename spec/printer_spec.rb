@@ -42,7 +42,7 @@ require 'spec_helper'
 
       describe '.set_default_cell_size' do
         it 'returns a number based on the class of the passed-in board' do
-          expect(Printer.set_default_cell_size(hint_board)).to eq 1
+          expect(Printer.set_default_cell_size(hint_board)).to eq 2
         end
       end
     end

@@ -1,28 +1,9 @@
 require_relative './lib/mastermind.rb'
 
-game = Mastermind::Game.new(Mastermind::Game.get_settings())
+settings = Mastermind::Game.get_settings(:true)
+game = Mastermind::Game.new(settings)
 
-game.guess_board.rows[0] = ([:red, :blue, :green, :yellow])
-game.guess_board.rows[1] = ([:yellow, :green, :blue, :red])
-game.guess_board.rows[2] = ([:green, :yellow, :blue, :red])
-game.guess_board.rows[3] = ([:green, :yellow, :red, :blue])
+#preset_colors = [ :yellow, :magenta, :black, :white ]
+#game.maker.send(:set_pattern, {pattern: preset_colors})
 
-game.hint_board.rows[0] = ([:white, :white, nil, nil])
-game.hint_board.rows[1] = ([:black, :black, :black, nil])
-game.hint_board.rows[2] = ([:black, :white, nil, nil])
-game.hint_board.rows[3] = ([nil, nil, nil, nil])
-
-puts game
-#puts game.num_of_turns
-#puts game.code_length
-#puts game.guess_board.rows
-options = { 
-  guess_board: game.guess_board,
-  hint_board: game.hint_board
-}
-merged = Printer.merge_two_boards(options)
-Printer.print_board(merged)
-puts
-#Printer.print_board(game.guess_board)
-#puts
-#Printer.print_board(game.hint_board)
+game.play

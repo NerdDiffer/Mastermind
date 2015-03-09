@@ -108,12 +108,29 @@ module Printer
   def self.set_default_cell_size(board)
     case board.class.to_s
     when 'Mastermind::GuessBoard', 'Mastermind::AnswerBoard'
-      3
+      4
     when 'Mastermind::HintBoard'
-      1
+      2
     else
-      1
+      2
     end
+  end
+
+  def self.print_error_message(e)
+    def self.grow_marker n
+      str = ''
+      n.times { str << '*' }
+      str
+    end
+    msg = (e.class.to_s << ": " << e.message.to_s)
+    n = msg.length
+    marker = self.grow_marker(n)
+    puts
+    print marker.center(n)
+    puts
+    print msg.center(n)
+    puts
+    print marker.center(n)
   end
 
 end
