@@ -8,55 +8,85 @@ module Mastermind
   end
 
   class Codemaker < Player
-    def initialize(name)
-      @name = super
-      @pattern = set_pattern
+    def initialize(name, num_columns = 4)
+      @name = name
+      @pattern = set_pattern({code_length: num_columns})
     end
 
-    def give_hint(move)
-      is_position_and_color_correct?(move)
+    # receives array of symbols from Codebreaker#make_guess
+    # returns hash
+    def give_hint(guess)
+      rate_guess(guess)
     end
 
     private
-    def show_pattern
+    def show_pattern()
       @pattern
     end
 
-    def set_pattern(pattern = nil)
-      arr = pattern.nil? ?
-        Mastermind::CodePeg.keypeg_colors.sample(4) :
-        pattern.map { |color| color }
+    def set_pattern(args = {})
+      args[:pattern] ||= nil
+      args[:code_length] ||= 4
+      arr = args[:pattern].nil? ?
+        Mastermind::CodePeg.keypeg_colors.sample(args[:code_length]) :
+        args[:pattern].map { |color| color }
       @pattern = arr
     end
 
-    def is_color_correct?(peg)
-      show_pattern().any? { |color| peg == color }
-    end
-
-    def is_position_and_color_correct?(move)
+    # excellent method by DonaldAli
+    # https://github.com/donaldali/odin-ruby/blob/master/project_oop/mastermind/lib/mastermind/mastermind_module.rb
+    def rate_guess(guess)
       pattern = show_pattern()
-      response = {
-        black:  0,
-        white: 0,
-      }
+      response = { black:  0, white: 0 }
+      unmatched = {guesses: [], pattern: []}
 
-      move.each_with_index do |color, index|
-        if color == pattern[index]
+      guess.each_with_index do |guess_color, index|
+        if guess_color == pattern[index]
           response[:black] += 1
-        elsif pattern.any?{ |peg| peg == color } #is_color_correct?(color)
-          response[:white] += 1
         else
+          unmatched[:guesses] << guess_color
+          unmatched[:pattern] << pattern[index]
         end
       end
+
+      unmatched[:guesses].each do |guess_color|
+        index = unmatched[:pattern].index(guess_color)
+        unless index.nil?
+          unmatched[:pattern].delete_at(index)
+          response[:white] += 1
+        end
+      end
+
       response
     end
+
   end
 
   class Codebreaker < Player
-    def make_move(*peg_colors)
-      peg_colors
-      #peg_colors.map { |color| CodePeg.new(color) }
-      #peg_colors.map.with_index { |color, index| CodePeg.new(color) }
+    # pass in space-separated list of values as one string,
+    # returns each value as an array of individual symbols
+    def make_guess(peg_colors)
+      if peg_colors.class != String
+        type_err_msg = 'Please pass in a string'
+        raise TypeError.new(type_err_msg)
+      elsif peg_colors.include? ','
+        argument_err_msg = 'Please delimit each color with a space instead of a comma'
+        raise ArgumentError.new(argument_err_msg)
+      end
+
+      peg_array = peg_colors.split(' ')
+
+      peg_array.map do |s|
+        s = s.downcase.to_sym
+        unless Mastermind::CodePeg.is_color_correct?(s)
+          acceptable_colors = Mastermind::CodePeg.keypeg_colors
+          key_err_msg = "#{s} is not an available color. Please choose from:\n"
+          acceptable_colors.each {|color| key_err_msg << (color.to_s << "\n")}
+          raise(KeyError, key_err_msg)
+        else
+          s
+        end
+      end
     end
   end
 
