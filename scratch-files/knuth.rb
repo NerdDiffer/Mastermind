@@ -33,6 +33,26 @@ end
 # 3. play the guess to get response of colored & white pegs
 # 4. if response is 4 colored pegs, then game is won 
 # 5. otherwise, remove any code from S that would NOT give same response if the guess were the code
+
 # 6. apply minimax technique to find the next guess
 #   a) for each possible guess of original set of 1296: calculate how many possibilities it might eliminate from S
+
+def min(a,b)
+  a >= b ? a : b
+end
+
+def max(a,b)
+  a <= b ? a : b
+end
+
+# block can be:
+#   `min` for getting minimum value
+#   `max` for getting maximum value
+def inject_total(unique_values, &block)
+  unique_values.inject(0) do |total, num|
+    n_in_code = count_hits(num, secret_code)
+    n_in_guess = count_hits(num, guess)
+    total += block.call(n_in_code, n_in_guess)
+  end
+end
 # 7. repeat from step 3

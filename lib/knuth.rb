@@ -1,17 +1,20 @@
 module Mastermind
   class Knuth < Codebreaker
-    attr_reader :narrowed_set
+    attr_reader :narrowed_set, :history
 
     def initialize(name, key_size, unique_values) 
-      @key_size = key_size
-      @name = name
-      all_possibilities = unique_values.repeated_permutation(key_size).to_a
-      @narrowed_set = all_possibilities.map { |c| make_guess(c.join(' '))}
       @history = []
+      @name = name
+      @key_size = key_size
+      @palette = unique_values
+      all_possibilities = @palette.repeated_permutation(key_size).to_a
+      @narrowed_set = all_possibilities.map do |c|
+        make_guess(c.join(' '), @palette)
+      end
     end
 
     # only works when @key_size is 4
-    def proto_guess(value)
+    def proto_guess()
       guess = []
       # the first guess is in the 1122 pattern
       if @history.empty?
@@ -19,7 +22,7 @@ module Mastermind
         guess[1], guess[3] = guess[0], guess[2]
       else
         if @narrowed_set.empty?
-          guess = make_blank_guess
+          guess = make_blank_guess()
         else
           guess = @narrowed_set[rand(0...@narrowed_set.length)] 
         end
@@ -27,65 +30,27 @@ module Mastermind
       if is_guess_valid?(guess)
         @history << guess
         return guess
+      else
+        raise(KeyError, "at least one of the values is not part of @palette")
       end
     end
 
-    # tells you how many black pegs you would place
-    # how many values are the same and also in the same position
-    def compare(current_guess, another_guess)
-      current_guess.zip(another_guess).map { |x,y| x<=> y }.count(0)
-    end
-
-    #def ==(current_guess, another_guess)
-    #  compare(current_guess, another_guess) == current_guess.length
-    #end
-
-    def check_presence(current_guess, another_guess)
-      num_present = 0
-      compare_sequence = another_guess.clone
-
-      current_guess.each do |x|
-        if compare_sequence.include(x)
-          num_present += 1
-          compare_sequence.delete_at(compare_sequence.find_index(x))
-        end
+    def remove_from_narrowed_set(hint_from_codemaker, value = @history.last)
+      @narrowed_set.delete_if { |x| x == value }
+      @narrowed_set.delete_if do |x|
+        hint_from_codemaker != score(x, value)
       end
-      num_pres
     end
 
-    def color_and_position(current_guess, another_guess)
-      compare(current_guess, another_guess)
-    end
-
-    def color_but_not_position(current_guess, another_guess)
-      p1 = check_presence(current_guess, another_guess)
-      p2 = compare(current_guess, another_guess)
-      p1 - p2
-    end
-
+    # mimics the Codemaker's private method, rate_guess
     def score(current_guess, another_guess)
+      g1 = current_guess
+      g2 = another_guess
+
       fake_response = {black: 0, white: 0}
-      fake_response[:black] = color_and_position(current_guess, another_guess)
-      fake_response[:white] = color_but_not_position(current_guess, another_guess)
+      fake_response[:black] = count_same_color_and_position(g1, g2)
+      fake_response[:white] = count_same_color_but_wrong_position(g1, g2)
       fake_response
-    end
-    # block can be:
-    #   `min` for getting minimum value
-    #   `max` for getting maximum value
-    def inject_total(unique_values, &block)
-      unique_values.inject(0) do |total, num|
-        n_in_code = count_hits(num, secret_code)
-        n_in_guess = count_hits(num, guess)
-        total += block.call(n_in_code, n_in_guess)
-      end
-    end
-
-    def min(a,b)
-      a >= b ? a : b
-    end
-
-    def max(a,b)
-      a <= b ? a : b
     end
 
     private
@@ -96,22 +61,38 @@ module Mastermind
     end
 
     def is_guess_valid?(guess)
-      guess.all? { |s| Mastermind::CodePeg.is_color_correct?(s) }
+      guess.all? { |s| @palette.member?(s) }
     end
 
     def random_color()
-      Mastermind::CodePeg.keypeg_colors.sample()
+      @palette.sample()
     end
 
-    def remove_from_narrowed_set(value = @history.last)
-      @narrowed_set.delete_if { |x| x == value }
-      @narrowed_set.delete_if do |x|
-        (x.score(value) <=> value.score(@code_to_guess)) != 0
+    def count_hits(current_guess, another_guess)
+      num_present = 0
+      compare_sequence = another_guess.clone
+
+      current_guess.each do |x|
+        if compare_sequence.include?(x)
+          num_present += 1
+          compare_sequence.delete_at(compare_sequence.find_index(x))
+        end
       end
+      num_present
     end
-    
-    def count_hits(val, arr)
-      arr.count(val)
+
+    def count_same_color_and_position(arr1, arr2)
+      count = 0
+      arr1.each_with_index do |value, index|
+        count += 1 if value == arr2[index]
+      end
+      count
+    end
+
+    def count_same_color_but_wrong_position(current_guess, another_guess)
+      p1 = count_hits(current_guess, another_guess)
+      p2 = count_same_color_and_position(current_guess, another_guess)
+      p1 - p2
     end
 
   end
