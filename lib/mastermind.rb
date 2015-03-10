@@ -11,3 +11,5 @@ Mastermind.constants.each do |c|
     to_s.slice('Mastermind::'.length, c_length).downcase
   require_relative file
 end
+
+require_relative './knuth.rb'
