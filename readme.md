@@ -10,10 +10,11 @@ Each turn, the Codebreaker gets some feedback from the Codemaker about how good 
 
 The position of the hint pegs gives no indication as to which of your guess pegs was correct. One hint peg corresponds to any one of your guess pegs. Though black pegs will always be placed before white pegs.
 
-Read more about Mastermind on [Wikipedia](http://en.wikipedia.org/wiki/Mastermind_(board_game)
+Read more about Mastermind on [Wikipedia](http://www.en.wikipedia.org/wiki/Mastermind_(board_game)/)
 
 ####run tests
-`rake`
+to run all tests: `rspec` from home directory  
+to run a test of a certain file: `rspec path/to/file`  
 
 ###how to play
 be sure to install the **colorize** gem:  

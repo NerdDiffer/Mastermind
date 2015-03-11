@@ -93,20 +93,23 @@ module Mastermind
 
     def self.get_settings(prompt = nil)
       settings = {}
+      puts
       if prompt
+        puts "OK, customizing settings"
+        puts
         # Step 1: get name for Codemaker
-        puts "Enter the name of the Codemaker"
+        puts "Step 1/5: Enter the name of the Codemaker"
         settings[:maker] = gets.chomp
 
         # Step 2: ask if Codemaker is a human or AI player.
-        # If human go to 2a, else go to 2b
-        puts "Is the Codemaker a human or a robot?"
-        # Step 2a: if Codemaker is a human
-        case gets.chomp.to_sym
+        # If human then go to 3a, else go to 3b
+        puts "Step 2/5: Is the Codemaker a human or a robot?"
+        case gets.chomp.downcase.to_sym
+        # Step 3a: if Codemaker is a human
         when :human
           puts "the Codemaker is a human"
           begin
-            puts "Enter a secret code"
+            puts "Step 3/5: Enter a secret code"
             code = Codebreaker.new('').instance_eval {self.make_guess(gets.chomp)}
           rescue StandardError => e
             puts Printer.print_error_message(e)
@@ -114,11 +117,11 @@ module Mastermind
           else
             settings[:pattern] = code
           end
-        # Step 2b: if the Codemaker is not a human
+        # Step 3b: if the Codemaker is not a human
         else
           puts "the Codemaker is AI"
           begin
-            puts "How many characters long is the secret code?"
+            puts "Step 3/5: How many characters long is the secret code?"
             n = gets.chomp.to_i
             self.is_code_length_valid?(n)
           rescue ArgumentError => e
@@ -129,13 +132,13 @@ module Mastermind
           end
         end
         
-        # Step 3: get name for Codebreaker
-        puts "Enter the name of Codebreaker"
+        # Step 4: get name for Codebreaker
+        puts "Step 4/5: Enter the name of Codebreaker"
         settings[:breaker] = gets.chomp
         
-        # Step 4: ask how many turns the Codebreaker has
+        # Step 5: ask how many turns the Codebreaker has
         begin
-          puts "How many turns will the Codebreaker have?"
+          puts "Step 5/5: How many turns will the Codebreaker have?"
           n = gets.chomp.to_i
           self.is_total_turns_valid?(n)
         rescue ArgumentError => e
@@ -145,6 +148,7 @@ module Mastermind
           settings[:total_turns] = n
         end
       else
+        puts "Playing with default settings"
         settings[:maker] = 'Mordecai Meirowitz'
         settings[:breaker] = 'Boris Grishenko'
       end
