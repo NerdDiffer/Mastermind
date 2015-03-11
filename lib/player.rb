@@ -8,9 +8,13 @@ module Mastermind
   end
 
   class Codemaker < Player
-    def initialize(name, num_columns = 4)
+    def initialize(name, num_columns = 4, humanely_set_pattern = nil)
       @name = name
-      @pattern = set_pattern({code_length: num_columns})
+      @pattern = humanely_set_pattern.nil? ?
+        set_pattern({code_length: num_columns}) :
+        set_pattern({code_length: humanely_set_pattern.length, pattern: humanely_set_pattern})
+        
+      #@pattern = set_pattern({code_length: num_columns})
     end
 
     # receives array of symbols from Codebreaker#make_guess

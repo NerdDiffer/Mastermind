@@ -11,8 +11,17 @@ module Mastermind
   describe 'Codemaker' do
     preset_colors = [ :white, :black, :magenta, :yellow ]
     let (:merv) { Codemaker.new('merv') }
+    let (:ernest) { Codemaker.new('Ernest P World', preset_colors.length, preset_colors) }
     let (:pattern) { merv.send(:set_pattern, {pattern: preset_colors}) }
 
+    describe '#new' do
+      context 'creating a human codemaker' do
+        it 'can let you manually-set the code as a human codemaker' do
+          secret_pattern = ernest.instance_eval { @pattern }
+          expect(secret_pattern).to eq preset_colors
+        end
+      end
+    end
     describe '#give_hint' do
       let(:bosco) { Codebreaker.new('bosco') }
 

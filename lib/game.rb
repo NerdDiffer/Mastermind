@@ -11,7 +11,7 @@ module Mastermind
       args[:total_turns] ||= 8
       args[:code_length] ||= 4
 
-      @maker = Codemaker.new(args[:maker], args[:code_length])
+      @maker = Codemaker.new(args[:maker], args[:code_length], args[:pattern])
       @breaker = Codebreaker.new(args[:breaker])
 
       @total_turns = self.class.is_total_turns_valid?(args[:total_turns])
@@ -40,12 +40,13 @@ module Mastermind
 
     def print_intro()
       puts
+      puts '**************'
+      puts 'Beginning Play'
+      puts '**************'
       puts "Codemaker: #{@maker.name}"
       puts "Codebreaker: #{@breaker.name}"
       puts "Number of Turns: #{@total_turns}"
       puts "Code Length: #{@code_length}"
-      puts
-      puts "Codemaker, #{@maker.name}, is creating the secret code..."
     end
 
     def print_outcome(outcome)
@@ -87,30 +88,52 @@ module Mastermind
         @hint_board.receive(hint)
         puts "You guessed: #{guess}"
         puts "The hint: #{hint}"
-        print_reveal_answer()
       end
     end
 
     def self.get_settings(prompt = nil)
       settings = {}
       if prompt
+        # Step 1: get name for Codemaker
         puts "Enter the name of the Codemaker"
         settings[:maker] = gets.chomp
-        
-        begin
-          puts "How many characters long is the secret code?"
-          n = gets.chomp.to_i
-          self.is_code_length_valid?(n)
-        rescue ArgumentError => e
-          puts Printer.print_error_message(e)
-          retry
+
+        # Step 2: ask if Codemaker is a human or AI player.
+        # If human go to 2a, else go to 2b
+        puts "Is the Codemaker a human or a robot?"
+        # Step 2a: if Codemaker is a human
+        case gets.chomp.to_sym
+        when :human
+          puts "the Codemaker is a human"
+          begin
+            puts "Enter a secret code"
+            code = Codebreaker.new('').instance_eval {self.make_guess(gets.chomp)}
+          rescue StandardError => e
+            puts Printer.print_error_message(e)
+            retry
+          else
+            settings[:pattern] = code
+          end
+        # Step 2b: if the Codemaker is not a human
         else
-          settings[:code_length] = n
+          puts "the Codemaker is AI"
+          begin
+            puts "How many characters long is the secret code?"
+            n = gets.chomp.to_i
+            self.is_code_length_valid?(n)
+          rescue ArgumentError => e
+            puts Printer.print_error_message(e)
+            retry
+          else
+            settings[:code_length] = n
+          end
         end
         
+        # Step 3: get name for Codebreaker
         puts "Enter the name of Codebreaker"
         settings[:breaker] = gets.chomp
         
+        # Step 4: ask how many turns the Codebreaker has
         begin
           puts "How many turns will the Codebreaker have?"
           n = gets.chomp.to_i
@@ -122,8 +145,8 @@ module Mastermind
           settings[:total_turns] = n
         end
       else
-        settings[:maker] = 'Merv Griffin'
-        settings[:breaker] = 'Brian Williams'
+        settings[:maker] = 'Mordecai Meirowitz'
+        settings[:breaker] = 'Boris Grishenko'
       end
       settings
     end
