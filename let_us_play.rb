@@ -1,30 +1,19 @@
 require_relative './lib/mastermind.rb'
 
-def get_settings(prompt = nil)
-  settings = {}
-  if prompt
-    puts "Enter the name of the Codemaker"
-    settings[:maker] = gets.chomp
-    
-    puts "How many characters long is the secret code?"
-    settings[:code_length] = gets.chomp
-    
-    puts "Enter the name of Codebreaker"
-    settings[:breaker] = gets.chomp
-    
-    puts "How many turns will the Codebreaker have? Must be an even number, >= 4 and <= 12"
-    settings[:num_of_turns] = gets.chomp
-  else
-    settings[:maker] = 'Merv Griffin'
-    settings[:breaker] = 'Brian Williams'
-    #settings[:code_length] = 4
-    #settings[:num_of_turns] = 8
-  end
-  settings
-end
+puts "Do you want to play a quick game with the default settings?"
+puts "Or do you want to choose the settings? ie:"
+puts "* Choose player names & roles?"
+puts "* Choose to play against AI, humans or just watch 2 AI players"
+puts "* Choose length of the secret code?"
+puts "* Choose number of turns?"
+puts
+puts "To play a quick game, leave blank & press enter"
+puts "To customize your settings, type in anything else & press enter"
 
-game = Mastermind::Game.new(get_settings())
+choice = gets.chomp
+choice = choice == '' ? nil : :true
 
-puts game
-puts game.num_of_turns
-puts game.code_length
+settings = Mastermind::Game.get_settings(choice)
+game = Mastermind::Game.new(settings)
+
+game.play
