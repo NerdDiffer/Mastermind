@@ -21,4 +21,7 @@ be sure to install the **colorize** gem:
 `gem install colorize`  
 
 want to play(against yourself)?  
-`ruby let_us_play.rb` from this project's home directory
+`ruby let_us_play.rb` from this project's home directory  
+
+You can play with a code whose length is up to 6. Going beyond that is not recommended for most computers.  
+If you choose a code length of 5 or 6 and you are waiting for the AI to make a move, it might be computing some internal variables. *Please be patient!* Or just interrupt the process and choose a lower code length.

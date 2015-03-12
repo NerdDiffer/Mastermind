@@ -12,7 +12,15 @@ module Mastermind
       args[:code_length] ||= 4
 
       @maker = Codemaker.new(args[:maker], args[:code_length], args[:pattern])
-      @breaker = Codebreaker.new(args[:breaker])
+      case args[:human_or_ai_codebreaker]
+      when :ai
+        puts '##### YOU CHOSE AI #####'
+        palette = CodePeg.keypeg_colors
+        @breaker = Knuth.new(args[:breaker], args[:code_length], palette)
+      else
+        puts '<< defaulted to human >>'
+        @breaker = Codebreaker.new(args[:breaker])
+      end
 
       @total_turns = self.class.is_total_turns_valid?(args[:total_turns])
       @code_length = args[:code_length]
@@ -64,7 +72,8 @@ module Mastermind
         puts "You lose #{@breaker.name}!"
       end
       puts "Here is the answer:"
-      print_reveal_answer()
+      reveal_answer()
+      Printer.print_board(@answer_board)
     end
 
     def do_one_turn()
@@ -78,7 +87,14 @@ module Mastermind
         Printer.print_board(merged)
         puts
         puts "#{@breaker.name}: Enter a list of #{@code_length} colors, separated by spaces"
-        guess = @breaker.make_guess(gets.chomp)
+        if @breaker.class == Knuth
+          guess = @breaker.proto_guess()
+          @breaker.add_guess_to_history(guess)
+          @breaker.remove_from_narrowed_set(@maker.give_hint(guess))
+          sleep(1.5)
+        elsif @breaker.class == Codebreaker
+          guess = @breaker.make_guess(gets.chomp)
+        end
       rescue StandardError => e
         puts Printer.print_error_message(e)
         retry
@@ -98,18 +114,18 @@ module Mastermind
         puts "OK, customizing settings"
         puts
         # Step 1: get name for Codemaker
-        puts "Step 1/5: Enter the name of the Codemaker"
+        puts "Step 1/6: Enter the name of the Codemaker"
         settings[:maker] = gets.chomp
 
         # Step 2: ask if Codemaker is a human or AI player.
         # If human then go to 3a, else go to 3b
-        puts "Step 2/5: Is the Codemaker a human or a robot?"
+        puts "Step 2/6: Is the Codemaker a human or a robot?"
         case gets.chomp.downcase.to_sym
         # Step 3a: if Codemaker is a human
         when :human
           puts "the Codemaker is a human"
           begin
-            puts "Step 3/5: Enter a secret code"
+            puts "Step 3/6: Enter a secret code"
             code = Codebreaker.new('').instance_eval {self.make_guess(gets.chomp)}
           rescue StandardError => e
             puts Printer.print_error_message(e)
@@ -121,7 +137,7 @@ module Mastermind
         else
           puts "the Codemaker is AI"
           begin
-            puts "Step 3/5: How many characters long is the secret code?"
+            puts "Step 3/6: How many characters long is the secret code?"
             n = gets.chomp.to_i
             self.is_code_length_valid?(n)
           rescue ArgumentError => e
@@ -133,12 +149,25 @@ module Mastermind
         end
         
         # Step 4: get name for Codebreaker
-        puts "Step 4/5: Enter the name of Codebreaker"
+        puts "Step 4/6: Enter the name of Codebreaker"
         settings[:breaker] = gets.chomp
+        # Step 5: ask if Codebraker is human or AI player
+        # If human then go to 5a, else go to 5b
+        puts "Step 5/6: Is the Codebreaker a human or a robot?"
+        case gets.chomp.downcase.to_sym
+        # Step 5a: if Codebreaker is a AI
+        when :robot, :ai
+          settings[:human_or_ai_codebreaker] = :ai
+          puts "the Codebreaker is AI"
+        # Step 5b: if the Codemaker is not a human
+        else
+          settings[:human_or_ai_codebreaker] = :human
+          puts "the Codebreaker is a human"
+        end
         
-        # Step 5: ask how many turns the Codebreaker has
+        # Step 6: ask how many turns the Codebreaker has
         begin
-          puts "Step 5/5: How many turns will the Codebreaker have?"
+          puts "Step 6/6: How many turns will the Codebreaker have?"
           n = gets.chomp.to_i
           self.is_total_turns_valid?(n)
         rescue ArgumentError => e
@@ -156,10 +185,10 @@ module Mastermind
     end
 
     def self.is_code_length_valid?(num)
-      # must be (1..8)
-      num = (num >= 1 && num <= 8) ?
+      # must be (1..6)
+      num = (num >= 1 && num <= 6) ?
         num :
-        raise(ArgumentError, "Must be >= 1 and <= 8")
+        raise(ArgumentError, "Must be >= 1 and <= 6")
     end
     def self.is_total_turns_valid?(num)
       # must be an even number. must be (4..12)
@@ -177,9 +206,8 @@ module Mastermind
       false
     end
 
-    def print_reveal_answer()
+    def reveal_answer()
       @answer_board.receive(@maker.send(:show_pattern))
-      Printer.print_board(@answer_board)
     end
 
   end

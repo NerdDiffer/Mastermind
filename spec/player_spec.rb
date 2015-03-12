@@ -123,6 +123,12 @@ module Mastermind
         answer = [:blue, :white, :magenta, :yellow]
         expect(bosco.make_guess(input)).to eq answer
       end
+      it 'accepts an optional 2nd parameter, specifying a set of CodePeg colors to validate against' do
+        optional_set = [:_1, :_2, :_3, :_4, :_5, :_6]
+        input = '_1 _1 _2 _2'
+        answer = [:_1, :_1, :_2, :_2]
+        expect(bosco.make_guess(input, optional_set)).to eq answer
+      end
       it "raises TypeError error if the values of input isn't a string" do
         input = %w(:blue, :white, :magenta, :yellow)
         expect{bosco.make_guess(input)}.to raise_error TypeError

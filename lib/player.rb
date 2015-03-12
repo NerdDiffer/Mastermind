@@ -69,7 +69,7 @@ module Mastermind
   class Codebreaker < Player
     # pass in space-separated list of values as one string,
     # returns each value as an array of individual symbols
-    def make_guess(peg_colors)
+    def make_guess(peg_colors, set = Mastermind::CodePeg.keypeg_colors)
       if peg_colors.class != String
         type_err_msg = 'Please pass in a string'
         raise TypeError.new(type_err_msg)
@@ -82,8 +82,8 @@ module Mastermind
 
       peg_array.map do |s|
         s = s.downcase.to_sym
-        unless Mastermind::CodePeg.is_color_correct?(s)
-          acceptable_colors = Mastermind::CodePeg.keypeg_colors
+        unless set.member?(s)
+          acceptable_colors = set
           key_err_msg = "#{s} is not an available color. Please choose from:\n"
           acceptable_colors.each {|color| key_err_msg << (color.to_s << "\n")}
           raise(KeyError, key_err_msg)
@@ -92,6 +92,7 @@ module Mastermind
         end
       end
     end
+
   end
 
 end
