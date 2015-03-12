@@ -132,6 +132,7 @@ module Mastermind
             retry
           else
             settings[:pattern] = code
+            settings[:code_length] = code.length
           end
         # Step 3b: if the Codemaker is not a human
         else
