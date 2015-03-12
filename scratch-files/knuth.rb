@@ -2,7 +2,7 @@ require_relative '../lib/mastermind'
 require_relative '../lib/knuth'
 
 game = Mastermind::Game.new(Mastermind::Game.get_settings())
-dk = Knuth.new('dk', 4, Mastermind::CodePeg.keypeg_colors)
+dk = Knuth.new('dk', 4, Mastermind::CodePeg.available_colors)
 
 define_method :one_turn do
   guess1 = game.breaker.make_guess('yellow magenta black white')

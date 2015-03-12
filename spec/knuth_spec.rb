@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mastermind
   describe 'Knuth' do
-    let(:palette) { Mastermind::CodePeg.keypeg_colors }
+    let(:palette) { Mastermind::CodePeg.available_colors }
     let(:key_size) { 4 }
     let(:dk) { Knuth.new('donald knuth', key_size, palette) }
     let(:bigger_codebreaker) {Knuth.new('Heavy', 5, palette)}

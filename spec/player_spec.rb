@@ -137,7 +137,7 @@ module Mastermind
         input = 'blue, white, magenta, yellow'
         expect{bosco.make_guess(input)}.to raise_error ArgumentError
       end
-      it "raises KeyError error if one of the values is not found in the CodePegs.keypeg_colors array" do
+      it "raises KeyError error if one of the values is not found in the CodePegs.available_colors array" do
         input = 'bleu beige orAnge ywlloe'
         expect{bosco.make_guess(input)}.to raise_error KeyError
       end

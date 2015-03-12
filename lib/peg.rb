@@ -1,7 +1,8 @@
 module Mastermind
+  # any Peg object is meant for one peg, not a set of them.
   class Peg
 
-    attr_reader :color, :size, :keypeg_colors
+    attr_reader :color, :size, :available_colors
 
     def initialize(color)
       if self.class.is_color_correct?(color)
@@ -11,20 +12,23 @@ module Mastermind
       end
     end
 
-    def self.keypeg_colors; @keypeg_colors; end
+    def self.available_colors; @available_colors; end
 
     def self.is_color_correct?(color)
-      not @keypeg_colors.find_index(color).nil?
+      not @available_colors.find_index(color).nil?
     end
 
   end
 
+  # a peg used by Codebreaker to place guesses
+  # also, a peg used by Codemaker to reveal the secret pattern
   class CodePeg < Peg
-    @keypeg_colors = [:black, :red, :green, :yellow,
+    @available_colors = [:black, :red, :green, :yellow,
                       :blue, :magenta, :cyan, :white]
   end
 
-  class KeyPeg < Peg
-    @keypeg_colors = [:black, :white]
+  # a peg used by Codemaker to give hints for Codebreaker
+  class HintPeg < Peg
+    @available_colors = [:black, :white]
   end
 end
