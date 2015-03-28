@@ -5,21 +5,18 @@ module Mastermind
     def initialize(name, key_size, unique_values) 
       @history = []
       @name = name
-      if key_size > 6
-        err_message = "*************************************\n"
-        err_message << "Consider choosing a code length <= 6.\n"
-        err_message << "It can be very computationally expensive to initialize the AI\n"
-        err_message << "Follow the stack traces to edit the limit.\n"
-        err_message << "You've been warned!"
-        raise RuntimeError, err_message
-      end
-      @key_size = key_size
+      # to change limit of key size,
+      # see #check_key_size and the class variable, @@limit.
+      @key_size = check_key_size(key_size)
       @palette = unique_values
       all_possibilities = @palette.repeated_permutation(key_size).to_a
       @narrowed_set = all_possibilities.map do |c|
         make_guess(c.join(' '), @palette)
       end
     end
+
+    @@limit = 6
+    def self.limit; @@limit; end
 
     def proto_guess()
       guess = []
@@ -52,7 +49,23 @@ module Mastermind
       end
     end
 
+
     private
+    def check_key_size(key_size)
+      limit = self.class.limit
+
+      unless key_size > limit
+        key_size
+      else
+        err_message = "\n*************************************\n"
+        err_message << "Consider choosing a code length <= #{limit}.\n"
+        err_message << "It can be very computationally expensive to initialize the AI.\n"
+        err_message << "Follow the stack traces to edit the limit.\n"
+        err_message << "You've been warned!"
+        raise RuntimeError, err_message
+      end
+    end
+
     # mimics the Codemaker's private method, rate_guess
     def score(current_guess, another_guess)
       g1 = current_guess

@@ -158,10 +158,10 @@ module Mastermind
     end
 
     def self.is_code_length_valid?(num)
-      # must be (1..6)
-      num = (num >= 1 && num <= 6) ?
+      # must be (1..Knuth.limit)
+      num = (num >= 1 && num <= Knuth.limit) ?
         num :
-        raise(ArgumentError, "Must be >= 1 and <= 6")
+        raise(ArgumentError, "Must be >= 1 and <= #{Knuth.limit}")
     end
 
     def self.is_total_turns_valid?(num)
