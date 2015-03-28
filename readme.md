@@ -23,5 +23,6 @@ be sure to install the **colorize** gem:
 want to play(against yourself)?  
 `ruby let_us_play.rb` from this project's home directory  
 
-You can play with a code whose length is up to 6. Going beyond that is not recommended for most computers.  
-If you choose a code length of 5 or 6 and you are waiting for the AI to make a move, it might be computing some internal variables. *Please be patient!* Or just interrupt the process and choose a lower code length.
+####a word of caution
+By default, the code length is set to 4 but you can play with higher code lengths. Going beyond a code length of 6 is not recommended for most computers. If you choose a code length of 5 or 6 and you are waiting for the AI to make a first move, it might just be computing some internal variables. *Please be patient!* Alternatively, just interrupt the process and start a new game with a lower code length.  
+Have a look at the constructor for the `Knuth` class in `lib/knuth.rb` in case you are interested in how it's set up. If you want to hack it, start at the constructor, run the program & follow the stack traces.
